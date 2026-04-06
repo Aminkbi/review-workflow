@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Review Workflow</title>
+  <link rel="stylesheet" href="/assets/styles.css">
+</head>
+<body>
+  <div class="page-shell">
+    <header class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow">Workflow Showcase</p>
+        <h1>Access reviews with traceable state, async execution, and clean operator controls.</h1>
+        <p class="lede">
+          This UI talks directly to the Go API. It stays lightweight on purpose: no frontend build pipeline,
+          just a simple dashboard for creating, reviewing, and inspecting workflow requests.
+        </p>
+      </div>
+      <div class="hero-stats" id="hero-stats">
+        <div class="stat-card">
+          <span class="stat-label">Visible requests</span>
+          <strong class="stat-value" id="stat-total">0</strong>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Pending review</span>
+          <strong class="stat-value" id="stat-pending">0</strong>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Execution failed</span>
+          <strong class="stat-value" id="stat-failed">0</strong>
+        </div>
+      </div>
+    </header>
+
+    <main class="layout-grid">
+      <section class="panel identity-panel">
+        <div class="panel-heading">
+          <h2>Actor Context</h2>
+          <p>Switch perspective to exercise requester, reviewer, and admin paths without a login flow.</p>
+        </div>
+        <div class="persona-list" role="list">
+          <button class="persona-card active" type="button" data-actor-id="alice" data-actor-role="employee">
+            <span class="persona-role">Employee</span>
+            <strong>Alice</strong>
+            <span class="persona-note">Create and submit requests</span>
+          </button>
+          <button class="persona-card" type="button" data-actor-id="reviewer-1" data-actor-role="reviewer">
+            <span class="persona-role">Reviewer</span>
+            <strong>Reviewer 1</strong>
+            <span class="persona-note">Approve or reject assigned requests</span>
+          </button>
+          <button class="persona-card" type="button" data-actor-id="admin-1" data-actor-role="admin">
+            <span class="persona-role">Admin</span>
+            <strong>Admin 1</strong>
+            <span class="persona-note">Inspect all workflow activity</span>
+          </button>
+        </div>
+        <div class="actor-meta">
+          <span class="actor-pill">Current actor</span>
+          <strong id="actor-display">alice / employee</strong>
+        </div>
+      </section>
+
+      <section class="panel create-panel">
+        <div class="panel-heading">
+          <h2>Create Request</h2>
+          <p>Drafts stay local to the requester until they are explicitly submitted into review.</p>
+        </div>
+        <form id="create-form" class="stack-form">
+          <label>
+            <span>Request type</span>
+            <select name="type">
+              <option value="system_access">System access</option>
+              <option value="role_change">Role change</option>
+              <option value="temporary_elevation">Temporary elevation</option>
+            </select>
+          </label>
+          <label>
+            <span>Target resource</span>
+            <input type="text" name="target_resource" placeholder="crm-admin">
+          </label>
+          <label>
+            <span>Justification</span>
+            <textarea name="justification" rows="4" placeholder="Why this access is needed"></textarea>
+          </label>
+          <button class="primary-button" type="submit">Create draft</button>
+        </form>
+      </section>
+
+      <section class="panel list-panel">
+        <div class="panel-heading split-heading">
+          <div>
+            <h2>Requests</h2>
+            <p>Filter and inspect the requests visible to the current actor.</p>
+          </div>
+          <div class="toolbar">
+            <select id="status-filter" aria-label="Filter requests by status">
+              <option value="">All statuses</option>
+              <option value="draft">Draft</option>
+              <option value="pending_review">Pending review</option>
+              <option value="approved">Approved</option>
+              <option value="rejected">Rejected</option>
+              <option value="executed">Executed</option>
+              <option value="execution_failed">Execution failed</option>
+            </select>
+            <button class="ghost-button" id="refresh-button" type="button">Refresh</button>
+          </div>
+        </div>
+        <div class="request-list" id="request-list"></div>
+      </section>
+
+      <section class="panel detail-panel">
+        <div class="panel-heading">
+          <h2>Detail & Audit</h2>
+          <p>Pick a request to inspect its state, metadata, and transition history.</p>
+        </div>
+        <div class="empty-state" id="detail-empty">
+          Select a request to view its full timeline.
+        </div>
+        <div class="detail-content hidden" id="detail-content">
+          <div class="detail-topline">
+            <div>
+              <p class="detail-label">Selected request</p>
+              <h3 id="detail-title">Request</h3>
+            </div>
+            <span class="status-chip" id="detail-status">draft</span>
+          </div>
+          <dl class="detail-grid" id="detail-grid"></dl>
+          <div class="action-group">
+            <button class="primary-button" id="submit-action" type="button">Submit for review</button>
+            <button class="approve-button" id="approve-action" type="button">Approve</button>
+            <button class="reject-button" id="reject-action" type="button">Reject</button>
+          </div>
+          <label class="action-comment">
+            <span>Review comment</span>
+            <textarea id="review-comment" rows="3" placeholder="Optional reviewer note"></textarea>
+          </label>
+          <div class="audit-list" id="audit-list"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="toast hidden" id="toast"></div>
+  <script src="/assets/app.js" defer></script>
+</body>
+</html>
