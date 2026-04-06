@@ -1,7 +1,7 @@
 .idea/
 .DS_Store
 .codex
-server
+/server
 *.log
 *.out
 *.pdf
